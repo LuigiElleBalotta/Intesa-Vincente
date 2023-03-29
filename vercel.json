@@ -1,5 +1,14 @@
 {
     "version": 2,
+    "name": "intesa-vincente",
+    "buildCommand": "npm run start",
+    "installCommand": "npm install",
+    "builds": [
+        {
+            "src": "dist/main.js",
+            "use": "@vercel/node"
+        }
+    ],
     "routes": [
         {
             "src": "/(.*)",
