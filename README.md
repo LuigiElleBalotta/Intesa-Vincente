@@ -1,73 +1,59 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Intesa Vincente - Reazione a Catena
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Introduzione
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Intesa Vincente è un progetto open source che ha lo scopo di creare un sistema di gioco che emuli il gioco "Reazione a Catena", un programma televisivo su RAI 1.
 
-## Description
+Il progetto è online e sfrutta la tecnologia web-socket per la comunicazione in tempo reale.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Come giocare
 
-## Installation
+Per giocare è necessario collegarsi al sito [https://intesa-vincente-fd.onrender.com/](https://intesa-vincente-fd.onrender.com/)
 
-```bash
-$ npm install
-```
+Non è necessario autenticarsi, ma consiglio di visualizzare tramite l'apposito bottone la lista delle stanze per evitare di mettere un codice già esistente e partecipare quindi a una sessione di gioco già iniziata.
 
-## Running the app
+Una volta dato il nome alla stanza (codice) e scelto il ruolo che si vuole avere nella stanza si può cominciare a giocare.
 
-```bash
-# development
-$ npm run start
+## Come funziona
 
-# watch mode
-$ npm run start:dev
+Per giocare c'è bisogno di una squadra composta da almeno 3 persone. 
 
-# production mode
-$ npm run start:prod
-```
+Almeno 2 persone devono dire una parola alla volta per portare il giocatore della squadra selezionato come "Indovino" a indovinare la parola segreta.4
 
-## Test
+A ogni parola azzeccata il "Conduttore" aumenta il punteggio di 1. In caso contrario lo diminuirà.
 
-```bash
-# unit tests
-$ npm run test
+Il gioco è a tempo, quindi quando l'Indovino crede di sapere la parola dovrà premere il bottone rosso per fermare il tempo e rispondere.
 
-# e2e tests
-$ npm run test:e2e
+I giocatori che non sono "Indovini" entreranno nella stanza come "Spettatori" e potranno vedere il punteggio e la parola segreta.
 
-# test coverage
-$ npm run test:cov
-```
+Di seguito un piccolo schema di esempio (**nota bene**: l'immagine è da aggiornare, l'indovino è un giocatore, i compagni di squadra sono **Guest**) 
 
-## Support
+![image info](./public/mockup_gioco.png)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Il bottone "Prosegui" è disponibile solamente al "Conduttore" ed è di colore **BLU**.
 
-## Stay in touch
+Il bottone "Prenota Risposta" è disponibile solamente all'"Indovino" ed è di colore **ROSSO**.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Regolamento ufficiale
 
-## License
+Il regolamento ufficiale è disponibile al seguente [link](https://www.rai.it/dl/docs/1419868094853Reazione_a_Catena_Regolamento_2015_Versione_del_2014-12-04.pdf)
 
-Nest is [MIT licensed](LICENSE).
+## Vista "Conduttore"
+
+![vista conduttore](./public/conduttore_view.png)
+
+## Vista "Indovino"
+
+![vista indovino](./public/indovino_view.png)
+
+## Vista "Spettatore"
+
+![vista spettatore](./public/guest_view.png)
+
+## Lista stanze
+
+![lista stanze](./public/rooms_list.png)
+
+## Cosa manca
+
+- [ ] Aggiungere la possibilità di visualizzare i 5 secondi per rispondere (attualmente è possibile aggirare questa cosa con il timer dello smartphone)
