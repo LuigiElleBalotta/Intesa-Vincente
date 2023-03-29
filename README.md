@@ -38,6 +38,38 @@ Il bottone "Prenota Risposta" è disponibile solamente all'"Indovino" ed è di c
 
 Il regolamento ufficiale è disponibile al seguente [link](https://www.rai.it/dl/docs/1419868094853Reazione_a_Catena_Regolamento_2015_Versione_del_2014-12-04.pdf)
 
+## Competitività
+
+Il gioco è stato pensato per essere giocato in modalità competitiva, quindi è possibile creare tornei.
+
+Tutti i dati del torneo è preferibile segnarli su carta, in modo da poter creare successivamente una classifica.
+
+### Gestire lo spareggio
+
+Se due squadre hanno lo stesso punteggio, si procede allo spareggio.
+
+La gestione dello spareggio è lasciata a discrezione del "Conduttore". Infatti è possibile aggiungere secondi quando il timer è a 0. 
+
+Ad esempio: due squadre sfidanti raggiungono il risultato di 5-5. Il "Conduttore" può decidere di aggiungere x secondi (in multipli di 5) al timer per permettere ai giocatori di rispondere a nuove domande.
+
+## Come generare liste di parole
+
+Per generare liste di parole è possibile utilizzare il seguente [link](https://www.palabrasaleatorias.com/parole-casuali.php?fs=1&fs2=0&Submit=Nuova+parola)
+
+Generare una lista di parole e copiarle in un file di testo.
+
+Il file in particolare deve essere messo dentro alla cartella "public" e deve chiamarsi "words_set_x.json" dove "x" è un numero intero **non già preso**.
+
+Per caricare il file con le parole è possibile chiamare il seguente endpoint:
+
+```http
+GET /set-words-set/:numero-set
+```
+
+### Attenzione
+
+Chiamando questo endpoint tutti i giocatori che usano questa istanza del software utilizzeranno il set di parole da voi scelto. **Vi consigliamo di giocare su dei vostri server.**
+
 ## Vista "Conduttore"
 
 ![vista conduttore](./public/conduttore_view.png)
