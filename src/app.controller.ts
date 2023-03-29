@@ -40,6 +40,7 @@ export class AppController {
           view_remove_score: true,
           view_next_round: true,
           view_stop_round: true,
+          view_word: true,
         };
       case 'giocatore':
         return {
@@ -47,6 +48,7 @@ export class AppController {
           view_remove_score: false,
           view_next_round: false,
           view_stop_round: true,
+          view_word: false,
         };
       case 'spettatore':
         return {
@@ -54,6 +56,7 @@ export class AppController {
           view_remove_score: false,
           view_next_round: false,
           view_stop_round: false,
+          view_word: true,
         }
     }
     throw new UnauthorizedException("Invalid privilege");

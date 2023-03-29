@@ -54,9 +54,11 @@
       </div>
     </div>
     <div class="col-md-4 col-lg-4 d-flex justify-content-center align-items-center mt-sm-5">
+      {{#ifCond this.view_word "===" true }}
       <div class="box p-5 rounded-lg text-center text-white">
         <h2 id="parola">PAROLA</h2>
       </div>
+      {{/ifCond}}
     </div>
     <div class="col-md-4 col-lg-4 d-flex justify-content-center align-items-center mt-sm-5">
       {{#ifCond this.view_next_round "===" true }}
@@ -155,8 +157,10 @@
     });
     socket.on("received-new-random-word", function (payload) {
       var parola = document.getElementById("parola");
-      parola.innerHTML = payload.random_word;
-      used_random_words.push(payload.random_word);
+      if( parola ) {
+        parola.innerHTML = payload.random_word;
+        used_random_words.push(payload.random_word);
+      }
       const prenota = document.getElementById("prenota");
       if( prenota ) {
         prenota.disabled = false;
