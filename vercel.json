@@ -1,7 +1,7 @@
 {
     "version": 2,
     "name": "intesa-vincente",
-    "buildCommand": "npm run start",
+    "buildCommand": "npm run build",
     "installCommand": "npm install",
     "routes": [
         {
