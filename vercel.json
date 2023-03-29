@@ -12,5 +12,6 @@
             "dest": "build/main.js",
             "methods": ["GET", "POST", "PUT", "DELETE"]
         }
-    ]
+    ],
+    "buildCommand": "npm run build:vercel"
 }
