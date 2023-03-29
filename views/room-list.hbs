@@ -135,7 +135,7 @@
 <script type="text/javascript">
   var socket = null;
 
-  socket = io.connect("", { path: "/ws" });
+  socket = io.connect(window.location.origin, { path: "/ws" });
   socket.on("connect", function () {
     console.log("Connected to server");
     socket.emit("request-rooms-list", {})

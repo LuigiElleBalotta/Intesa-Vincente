@@ -133,7 +133,7 @@
   var socket = null;
   var roomId = "";
   document.addEventListener("DOMContentLoaded", function () {
-    socket = io.connect("", { path: "/ws" });
+    socket = io.connect(window.location.origin, { path: "/ws" });
     socket.on("connect", function () {
       console.log("Connected to server");
       // Get the query string from the URL
