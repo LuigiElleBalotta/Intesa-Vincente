@@ -1,6 +1,6 @@
 import { Logger, UseFilters } from "@nestjs/common";
 import { BaseWsExceptionFilter, WebSocketGateway, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, WebSocketServer, SubscribeMessage, ConnectedSocket, MessageBody } from "@nestjs/websockets";
-import * as moment from 'moment';
+import moment from 'moment';
 import { Server, Socket } from "socket.io";
 import { KeyedCollection } from "../shared/keyed-collection";
 import { IntesaVincenteWs } from "./intesavincente.websocket";
