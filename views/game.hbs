@@ -183,6 +183,9 @@
     socket.on("update-timer", function (payload) {
       console.log('Received update-timer', payload);
       remaining_secs = payload.current_remaining_secs;
+      if( remaining_secs < 0 ) {
+        remaining_secs = 0;
+      }
       countdown_remaining_seconds();
     });
 
