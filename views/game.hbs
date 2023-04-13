@@ -196,6 +196,9 @@
       console.log('Received on-joined-room', payload);
       const stats = payload.stats;
       remaining_secs = stats.secondi_rimanenti;
+      if( remaining_secs < 0 ) {
+        remaining_secs = 0;
+      }
       write_remaining_secs();
       var punteggio = document.getElementById("punteggio");
       punteggio.innerHTML = stats.punteggio;
