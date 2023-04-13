@@ -73,6 +73,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.min.js" ></script>
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script type="text/javascript">
 
@@ -132,6 +133,31 @@
     socket.emit("update-score", { roomId, score: punteggio_value });
   }
 
+  function startSwalPrenotation() {
+    let timerInterval
+    Swal.fire({
+      title: 'Risposta prenotata!',
+      html: 'I will close in <b></b> milliseconds.',
+      timer: 5000,
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading()
+        const b = Swal.getHtmlContainer().querySelector('b')
+        timerInterval = setInterval(() => {
+          b.textContent = Swal.getTimerLeft()
+        }, 100)
+      },
+      willClose: () => {
+        clearInterval(timerInterval)
+      }
+    }).then((result) => {
+      /* Read more about handling dismissals below */
+      if (result.dismiss === Swal.DismissReason.timer) {
+        console.log('I was closed by the timer')
+      }
+    })
+  }
+
   var socket = null;
   var roomId = "";
   document.addEventListener("DOMContentLoaded", function () {
@@ -155,6 +181,7 @@
     socket.on("disconnect", function () {
       console.log("Disconnected from server");
     });
+    {{#ifCond this.view_word "===" true }}
     socket.on("received-new-random-word", function (payload) {
       var parola = document.getElementById("parola");
       if( parola ) {
@@ -166,6 +193,7 @@
         prenota.disabled = false;
       }
     })
+    {{/ifCond}}
 
     socket.on("start-countdown", function () {
       countdown_remaining_seconds();
@@ -173,6 +201,7 @@
 
     socket.on("stop-countdown", function () {
       clear_interval(globalTimerId);
+      Swal
     });
 
     socket.on("updated-score", function (payload) {
@@ -206,9 +235,11 @@
       var punteggio = document.getElementById("punteggio");
       punteggio.innerHTML = stats.punteggio;
 
+      {{#ifCond this.view_word "===" true }}
       const current_word = stats.current_word;
       var parola = document.getElementById("parola");
       parola.innerHTML = current_word;
+      {{/ifCond}}
     });
   });
 
