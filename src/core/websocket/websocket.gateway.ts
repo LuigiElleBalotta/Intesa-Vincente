@@ -257,7 +257,8 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
     this.rooms_stats.set(payload.roomId, room_stats);
   
     this.server.to(payload.roomId).emit('updated-score', {
-      score: newScore
+      score: newScore,
+      method: method
     });
   }
   

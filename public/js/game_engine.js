@@ -7,6 +7,11 @@ const status = {
     socket_connected: false
 };
 
+var audio_correct_answer_path = '/audio/correct_answer.mp3';
+var audio_wrong_answer_path = '/audio/wrong_answer.mp3';
+var audio_prenotation_path = '/audio/prenotazione.mp3';
+var audio_word_change_path = '/audio/word_change.mp3';
+
 function init( socket, roomId, privilege, permissions ) {
     _roomId = roomId;
     socket = socket;
@@ -106,6 +111,11 @@ function createToast( message, icon = 'info', timer = 3000) {
     })
 }
 
+function playAudio(path) {
+    let audio = new Audio(path);
+    audio.play();
+}
+
 // Socket.IO related functions.
 function handle_connect( privilege, id ) {
     socket.on("connect", function () {
@@ -140,6 +150,7 @@ function handle_on_new_random_word() {
             console.log("[Socket.IO] on-new-random-word", data);
             update_current_word(data.random_word);
         }
+        playAudio(audio_word_change_path);
         createToast('Nuova parola generata!', 'info' );
     });
 }
@@ -156,6 +167,7 @@ function handle_stop_countdown() {
     socket.on("stop-countdown", function (data) {
         console.log("[Socket.IO] stop-countdown", data);
         status.timer_active = false;
+        playAudio(audio_prenotation_path);
         startSwalPrenotation();
     });
 }
@@ -165,6 +177,12 @@ function handle_on_updated_score() {
         console.log("[Socket.IO] on-updated-score", data);
         update_punteggio( data.score );
         createToast('Punteggio aggiornato!', 'info' );
+        if( data.method === 'add' ) {
+            playAudio(audio_correct_answer_path);
+        }
+        else {
+            playAudio(audio_wrong_answer_path);
+        }
     });
 }
 
