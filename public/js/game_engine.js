@@ -3,7 +3,8 @@ var _roomId = null;
 var player_type = null;
 var options = null;
 const status = {
-    timer_active: false
+    timer_active: false,
+    socket_connected: false
 };
 
 function init( socket, roomId, privilege, permissions ) {
@@ -109,6 +110,8 @@ function createToast( message, icon = 'info', timer = 3000) {
 function handle_connect( privilege, id ) {
     socket.on("connect", function () {
         console.log("[Socket.IO] Connected to server");
+        status.socket_connected = true;
+        createToast('Ti sei connesso al server di gioco.', 'success')
         player_type = privilege;
         roomId = id;
         socket.emit("joinRoom", { roomId: roomId, player_type: privilege })
@@ -118,6 +121,8 @@ function handle_connect( privilege, id ) {
 function handle_disconnect() {
     socket.on("disconnect", function ( reason ) {
         console.log("[Socket.IO] Disconnected from server. Reason: ", reason);
+        status.socket_connected = false;
+        createToast('Sei stato disconnesso dal server di gioco.', 'success')
     });
 }
 
