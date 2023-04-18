@@ -6,6 +6,9 @@
   <title>L'intesa Vincente</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.0/font/bootstrap-icons.min.css" />
+  <link href="
+https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css
+" rel="stylesheet">
 
   <style>
     body {
@@ -29,10 +32,10 @@
         <h1 id="timer" class="display-4">01:15</h1>
         <div class="d-flex justify-content-center align-items-center">
           {{#ifCond this.view_add_score "===" true }}
-            <button id="sottrai" class="btn btn-danger btn-lg me-2" onclick="addTime(-5)">-5 sec</button>
+            <button id="sottrai" class="btn btn-danger btn-lg me-2" onclick="updateTime('sub')">-5 sec</button>
           {{/ifCond}}
           {{#ifCond this.view_remove_score "===" true }}
-            <button id="aggiungi" class="btn btn-success btn-lg" onclick="addTime(5)">+5 sec</button>
+            <button id="aggiungi" class="btn btn-success btn-lg" onclick="updateTime('add')">+5 sec</button>
           {{/ifCond}}
         </div>
       </div>
@@ -56,16 +59,16 @@
     <div class="col-md-4 col-lg-4 d-flex justify-content-center align-items-center mt-sm-5">
       {{#ifCond this.view_word "===" true }}
       <div class="box p-5 rounded-lg text-center text-white">
-        <h2 id="parola">PAROLA</h2>
+        <h2 id="parola"></h2>
       </div>
       {{/ifCond}}
     </div>
     <div class="col-md-4 col-lg-4 d-flex justify-content-center align-items-center mt-sm-5">
       {{#ifCond this.view_next_round "===" true }}
-      <button id="prosegui" class="btn btn-primary btn-lg me-5 so-big" onclick="on_prosegui_clicked()"><i class="bi bi-lightning-fill"></i></button>
+      <button id="prosegui" class="btn btn-primary btn-lg me-5 so-big" onclick="prosegui_btn_click()"><i class="bi bi-lightning-fill"></i></button>
       {{/ifCond}}
       {{#ifCond this.view_stop_round "===" true }}
-      <button id="prenota" class="btn btn-danger btn-lg so-big" onclick="on_prenota_clicked()" disabled><i class="bi bi-x-lg"></i></button>
+      <button id="prenota" class="btn btn-danger btn-lg so-big" onclick="prenota_btn_click()"><i class="bi bi-x-lg"></i></button>
       {{/ifCond}}
     </div>
   </div>
@@ -73,173 +76,30 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.min.js" ></script>
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="
+https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js
+"></script>
+<script src="/js/game_engine.js"></script>
 
 <script type="text/javascript">
 
-  var used_random_words = [];
-
-  var globalTimerId = null;
-  var remaining_secs = 75;
-
-  function clear_interval() {
-    clearInterval(globalTimerId);
-  }
-
-  function write_remaining_secs() {
-    var timer = document.getElementById("timer");
-    var minutes = Math.floor(remaining_secs / 60);
-    var seconds = remaining_secs % 60;
-    timer.innerHTML = minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
-  }
-
-  function countdown_remaining_seconds() {
-    globalTimerId = setInterval(function() {
-      write_remaining_secs();
-      socket.emit("register-timer-tick", { roomId: roomId, current_remaining_secs: remaining_secs });
-      remaining_secs--;
-      if (remaining_secs <= 0) {
-        socket.emit("stop-countdown", { roomId: roomId });
-      }
-    }, 1000);
-  }
-
-  function addTime( time_seconds ) {
-    socket.emit("add-time", { current_remaining_secs: remaining_secs += time_seconds, roomId: roomId });
-  }
-
-  function on_prosegui_clicked() {
-    socket.emit("new-random-word", { used_random_words, roomId });
-    socket.emit("obtain-remaining-secs", { current_remaining_secs: remaining_secs, roomId: roomId });
-  }
-
-  function on_prenota_clicked() {
-    const prenota = document.getElementById("prenota");
-    prenota.disabled = true;
-    socket.emit("prenota", { roomId: roomId });
-  }
-
-  function on_aggiungi_clicked() {
-    var punteggio = document.getElementById("punteggio");
-    var punteggio_value = parseInt(punteggio.innerHTML);
-    punteggio_value++;
-    socket.emit("update-score", { roomId, score: punteggio_value });
-  }
-
-  function on_sottrai_clicked() {
-    var punteggio = document.getElementById("punteggio");
-    var punteggio_value = parseInt(punteggio.innerHTML);
-    punteggio_value--;
-    socket.emit("update-score", { roomId, score: punteggio_value });
-  }
-
-  function startSwalPrenotation() {
-    let timerInterval
-    Swal.fire({
-      title: 'Risposta prenotata!',
-      html: 'I will close in <b></b> milliseconds.',
-      timer: 5000,
-      timerProgressBar: true,
-      didOpen: () => {
-        Swal.showLoading()
-        const b = Swal.getHtmlContainer().querySelector('b')
-        timerInterval = setInterval(() => {
-          b.textContent = Swal.getTimerLeft()
-        }, 100)
-      },
-      willClose: () => {
-        clearInterval(timerInterval)
-      }
-    }).then((result) => {
-      /* Read more about handling dismissals below */
-      if (result.dismiss === Swal.DismissReason.timer) {
-        console.log('I was closed by the timer')
-      }
-    })
-  }
-
   var socket = null;
-  var roomId = "";
   document.addEventListener("DOMContentLoaded", function () {
+
+    // Get the query string from the URL
+    const queryString = window.location.search;
+
+    // Create a new URLSearchParams object
+    const params = new URLSearchParams(queryString);
+
+    // Get the value of the parameter "id"
+    const id = params.get("roomId");
+    const player_type = params.get("privilege");
     socket = io.connect(window.location.origin, { path: "/ws" });
-    socket.on("connect", function () {
-      console.log("Connected to server");
-      // Get the query string from the URL
-      const queryString = window.location.search;
 
-      // Create a new URLSearchParams object
-      const params = new URLSearchParams(queryString);
-
-      // Get the value of the parameter "id"
-      const id = params.get("roomId");
-      const player_type = params.get("privilege");
-
-      roomId = id;
-
-      socket.emit("joinRoom", { roomId: id, player_type: player_type })
-    });
-    socket.on("disconnect", function () {
-      console.log("Disconnected from server");
-    });
-    {{#ifCond this.view_word "===" true }}
-    socket.on("received-new-random-word", function (payload) {
-      var parola = document.getElementById("parola");
-      if( parola ) {
-        parola.innerHTML = payload.random_word;
-        used_random_words.push(payload.random_word);
-      }
-      const prenota = document.getElementById("prenota");
-      if( prenota ) {
-        prenota.disabled = false;
-      }
-    })
-    {{/ifCond}}
-
-    socket.on("start-countdown", function () {
-      countdown_remaining_seconds();
-    });
-
-    socket.on("stop-countdown", function () {
-      clear_interval(globalTimerId);
-      Swal
-    });
-
-    socket.on("updated-score", function (payload) {
-      var punteggio = document.getElementById("punteggio");
-      punteggio.innerHTML = payload.score;
-    });
-
-    socket.on("update-timer", function (payload) {
-      console.log('Received update-timer', payload);
-      remaining_secs = payload.current_remaining_secs;
-      if( remaining_secs < 0 ) {
-        remaining_secs = 0;
-      }
-      countdown_remaining_seconds();
-    });
-
-    socket.on("added-time", function(payload) {
-      console.log('Received added-time', payload);
-      remaining_secs = payload.time;
-      write_remaining_secs();
-    });
-
-    socket.on("on-joined-room", function(payload) {
-      console.log('Received on-joined-room', payload);
-      const stats = payload.stats;
-      remaining_secs = stats.secondi_rimanenti;
-      if( remaining_secs < 0 ) {
-        remaining_secs = 0;
-      }
-      write_remaining_secs();
-      var punteggio = document.getElementById("punteggio");
-      punteggio.innerHTML = stats.punteggio;
-
-      {{#ifCond this.view_word "===" true }}
-      const current_word = stats.current_word;
-      var parola = document.getElementById("parola");
-      parola.innerHTML = current_word;
-      {{/ifCond}}
+    // Call init function from game_engine.js
+    init(socket, id, player_type, {
+        view_word: {{this.view_word}},
     });
   });
 
