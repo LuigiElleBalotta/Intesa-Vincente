@@ -48,14 +48,14 @@ function startSwalPrenotation() {
     let timerInterval
     Swal.fire({
         title: 'Risposta prenotata!',
-        html: 'I will close in <b></b> milliseconds.',
+        html: 'Sono rimasti <b></b> secondi per rispondere.',
         timer: 5000,
         timerProgressBar: true,
         didOpen: () => {
             Swal.showLoading()
             const b = Swal.getHtmlContainer().querySelector('b')
             timerInterval = setInterval(() => {
-                b.textContent = Swal.getTimerLeft()
+                b.textContent = Math.floor((Swal.getTimerLeft()/1000) % 60);
             }, 100)
         },
         willClose: () => {
