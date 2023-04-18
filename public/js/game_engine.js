@@ -29,6 +29,7 @@ function prosegui_btn_click() {
     }
     else {
         console.error('Timer is active, cannot change word.');
+        createToast('Il timer è attivo, non è possibile cambiare parola.', 'error' );
     }
 }
 
@@ -38,6 +39,7 @@ function prenota_btn_click() {
     }
     else {
         console.error('Timer is not active, cannot use prenota button.');
+        createToast('Il timer non è attivo, non è possibile usare il bottone di prenotazione.', 'error' );
     }
 }
 
@@ -80,7 +82,27 @@ function updateTime(method) {
     }
     else {
         console.error('Timer is active, cannot manually update time.');
+        createToast('Il timer è attivo, non è possibile aggiornarlo manualmente.', 'error' );
     }
+}
+
+function createToast( message, icon = 'info', timer = 3000) {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: timer,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+
+    Toast.fire({
+        icon: icon,
+        title: message
+    })
 }
 
 // Socket.IO related functions.
@@ -102,17 +124,19 @@ function handle_disconnect() {
 function handle_on_joined_room() {
     socket.on("on-joined-room", function (data) {
         console.log("[Socket.IO] on-joined-room", data);
+        createToast('Qualcuno ha joinato la stanza.', 'info' );
         handle_serverside_stats(data.stats);
     });
 }
 
 function handle_on_new_random_word() {
-    if( options && options.view_word ) {
-        socket.on("received-new-random-word", function (data) {
+    socket.on("received-new-random-word", function (data) {
+        if( options && options.view_word ) {
             console.log("[Socket.IO] on-new-random-word", data);
-            update_current_word( data.random_word );
-        });
-    }
+            update_current_word(data.random_word);
+        }
+        createToast('Nuova parola generata!', 'info' );
+    });
 }
 
 function handle_timer_tick() {
@@ -135,6 +159,7 @@ function handle_on_updated_score() {
     socket.on("updated-score", function (data) {
         console.log("[Socket.IO] on-updated-score", data);
         update_punteggio( data.score );
+        createToast('Punteggio aggiornato!', 'info' );
     });
 }
 
@@ -142,6 +167,7 @@ function handle_on_updated_time() {
     socket.on("updated-time", function (data) {
         console.log("[Socket.IO] updated-time", data);
         update_timer( data.time );
+        createToast('Il timer è stato aggiornato!', 'info' );
     });
 }
 
