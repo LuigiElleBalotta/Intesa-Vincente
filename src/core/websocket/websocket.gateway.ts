@@ -246,13 +246,18 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
     this.logger.log(`[${dataRicezione}] Client ${client.id} wants to update score. Payload: ${JSON.stringify(payload)}`)
     
     const room_stats = this.rooms_stats.get(payload.roomId);
-    room_stats.punteggio = payload.method === 'add' ? room_stats.punteggio++ : room_stats.punteggio--;
-    if( room_stats.punteggio < 0 ) {
-      room_stats.punteggio = 0;
+    const method = payload.method;
+    let newScore = method === 'add' ? +room_stats.punteggio + 1 : +room_stats.punteggio - 1;
+    if( newScore < 0 ) {
+      newScore = 0;
     }
+    
+    room_stats.punteggio = newScore;
+    
+    this.rooms_stats.set(payload.roomId, room_stats);
   
     this.server.to(payload.roomId).emit('updated-score', {
-      score: room_stats.punteggio
+      score: newScore
     });
   }
   
