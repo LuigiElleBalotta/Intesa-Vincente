@@ -94,8 +94,8 @@ function handle_connect( privilege, id ) {
 }
 
 function handle_disconnect() {
-    socket.on("disconnect", function () {
-        console.log("[Socket.IO] Disconnected from server");
+    socket.on("disconnect", function ( reason ) {
+        console.log("[Socket.IO] Disconnected from server. Reason: ", reason);
     });
 }
 
