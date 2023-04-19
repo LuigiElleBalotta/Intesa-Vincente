@@ -29,6 +29,8 @@ function init( socket, roomId, privilege, permissions ) {
 
 // UI related functions.
 function prosegui_btn_click() {
+    preventActionIfNotConnected();
+
     if( !status.timer_active ) {
         socket.emit("new-random-word", { roomId: roomId });
         socket.emit("start-timer", { roomId: roomId });
@@ -40,6 +42,8 @@ function prosegui_btn_click() {
 }
 
 function prenota_btn_click() {
+    preventActionIfNotConnected();
+
     if( status.timer_active ) {
         socket.emit("prenota", { roomId: roomId });
     }
@@ -75,14 +79,18 @@ function startSwalPrenotation() {
 }
 
 function on_aggiungi_clicked() {
+    preventActionIfNotConnected();
     socket.emit("update-score", { roomId, method: 'add' });
 }
 
 function on_sottrai_clicked() {
+    preventActionIfNotConnected();
     socket.emit("update-score", { roomId, method: 'sub' });
 }
 
 function updateTime(method) {
+    preventActionIfNotConnected();
+
     if( !status.timer_active ) {
         socket.emit("manually-update-time", { roomId: roomId, method: method });
     }
@@ -244,5 +252,12 @@ function update_timer( secondi_rimanenti ) {
     }
     else {
         console.log("No element with id 'timer' found.");
+    }
+}
+
+function preventActionIfNotConnected() {
+    if(!status.socket_connected ) {
+        createToast('Non sei connesso al server di gioco.', 'error');
+        return;
     }
 }
