@@ -60,6 +60,7 @@ function startSwalPrenotation() {
         html: 'Sono rimasti <b></b> secondi per rispondere.',
         timer: 5000,
         timerProgressBar: true,
+        allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading()
             const b = Swal.getHtmlContainer().querySelector('b')
