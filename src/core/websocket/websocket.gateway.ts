@@ -79,7 +79,8 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
         roomId: payload.roomId,
         punteggio: 0,
         secondi_rimanenti: 75,
-        current_word: 'GAME NOT STARTED'
+        current_word: 'GAME NOT STARTED',
+        is_paused: true
       });
       
       this.rooms_timers.set(payload.roomId, {
@@ -102,18 +103,20 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
     // const ws = this.socketsPool.Item( client.id );
     this.logger.log(`[${dataRicezione}] Client ${client.id} asked for a new random word...`)
     
-    
     const random_word = WordsSingleton.GetRandomWordExcluding(this.rooms_used_words.get(payload.roomId));
     
-    // Update room stats
-    this.rooms_stats.get(payload.roomId).current_word = random_word;
-    
-    // Update used words
-    this.rooms_used_words.get(payload.roomId).push(random_word);
-    
-    this.server.to(payload.roomId).emit('received-new-random-word', {
-      random_word: random_word
-    });
+    const room_stats = this.rooms_stats.get(payload.roomId);
+    if( room_stats.is_paused ) {
+      // Update room stats
+      this.rooms_stats.get(payload.roomId).current_word = random_word;
+  
+      // Update used words
+      this.rooms_used_words.get(payload.roomId).push(random_word);
+  
+      this.server.to(payload.roomId).emit('received-new-random-word', {
+        random_word: random_word
+      });
+    }
   }
   
   @SubscribeMessage('start-timer')
@@ -124,9 +127,16 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
     this.logger.log(`[${dataRicezione}] Client ${client.id} asked to start the room "${payload.roomId}" timer...`);
     
     const room_timer = this.rooms_timers.get(payload.roomId);
-    room_timer.interval_ref = setInterval(() => {
-      this._handleTimerTick(payload.roomId);
-    }, 1000);
+    
+    const room_stats = this.rooms_stats.get(payload.roomId);
+    
+    // This check should prevent multiple buttons click...
+    if( room_stats.is_paused ) {
+      room_stats.is_paused = false;
+      room_timer.interval_ref = setInterval(() => {
+        this._handleTimerTick(payload.roomId);
+      }, 1000);
+    }
   }
   
   private _handleTimerTick(roomId: string) {
@@ -146,7 +156,7 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
     }
   }
   
-  @SubscribeMessage('request-rooms-list') // TODO: to check...
+  @SubscribeMessage('request-rooms-list')
   handleRequestRoomsList(@ConnectedSocket() client: Socket, @MessageBody() payload: any ): void {
     const dataRicezione = moment().format('YYYY-MM-DD HH:mm:ss');
     

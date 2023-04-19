@@ -30,6 +30,12 @@ export class AppController {
     return {};
   }
   
+  @Get('test-videochat')
+  @Render('test-videochat')
+  getTestVideochat(): any {
+    return {};
+  }
+  
   @Get('game')
   @Render('game')
   getGame(@Query('roomId') roomId: string, @Query('privilege') privilege): any {

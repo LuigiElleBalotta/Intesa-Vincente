@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from "@nestjs/config";
 import { ValidationPipe } from "@nestjs/common";
 import { registerHandlebars } from "./core/handlebars/handlebars.utils";
+import { PeerServerService } from "./core/peer-server/peer-server.service";
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -20,6 +21,8 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe())
     app.enableCors();
     
+    const peerServerService = app.get(PeerServerService);
+    peerServerService.enablePeerServer(app);
     await app.listen(appPort);
     
     console.log(`Application is running on: ${await app.getUrl()}`);

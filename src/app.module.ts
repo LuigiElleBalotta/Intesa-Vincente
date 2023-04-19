@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule } from "@nestjs/config";
 import configuration from "./core/config/configuration";
 import { WebsocketModule } from "./core/websocket/websocket.module";
+import { PeerServerController } from "./core/peer-server/peer-server.controller";
+import { PeerServerService } from "./core/peer-server/peer-server.service";
 
 @Module({
     imports: [
@@ -14,7 +16,7 @@ import { WebsocketModule } from "./core/websocket/websocket.module";
         }),
         WebsocketModule
     ],
-    controllers: [AppController],
-    providers: [AppService],
+    controllers: [AppController, PeerServerController],
+    providers: [AppService, PeerServerService],
 })
 export class AppModule {}

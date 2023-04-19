@@ -32,6 +32,7 @@
     "class-validator": "^0.14.0",
     "hbs": "^4.2.0",
     "moment": "^2.29.4",
+    "peer": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
   },

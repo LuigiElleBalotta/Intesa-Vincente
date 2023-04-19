@@ -1,12 +1,14 @@
 import { Module } from "@nestjs/common";
 import { WebsocketGateway } from "./websocket.gateway";
+import { VideoCallWsGateway } from "./video-call.gateway";
 
 @Module({
   imports: [
   
   ],
   providers: [
-    WebsocketGateway
+    WebsocketGateway,
+    VideoCallWsGateway
   ],
   exports: [
   ]
