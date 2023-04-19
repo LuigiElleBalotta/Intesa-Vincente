@@ -32,8 +32,8 @@ function prosegui_btn_click() {
     preventActionIfNotConnected();
 
     if( !status.timer_active ) {
-        socket.emit("new-random-word", { roomId: roomId });
         socket.emit("start-timer", { roomId: roomId });
+        socket.emit("new-random-word", { roomId: roomId });
     }
     else {
         console.error('Timer is active, cannot change word.');

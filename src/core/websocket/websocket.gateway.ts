@@ -80,7 +80,8 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
         punteggio: 0,
         secondi_rimanenti: 75,
         current_word: 'GAME NOT STARTED',
-        is_paused: true
+        is_paused: true,
+        last_word_generated_time: null,
       });
       
       this.rooms_timers.set(payload.roomId, {
@@ -99,24 +100,31 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
   @SubscribeMessage('new-random-word')
   handleMessage(@ConnectedSocket() client: Socket, @MessageBody() payload: any ): void {
     const dataRicezione = moment().format('YYYY-MM-DD HH:mm:ss');
+    // If last_word_generated_time is null or the difference between now and last_word_generated_time is less than 5 second, do nothing
+    if( this.rooms_stats.get(payload.roomId).last_word_generated_time && moment().diff(this.rooms_stats.get(payload.roomId).last_word_generated_time, 'seconds') < 5 ) {
+      this.logger.log(`[${dataRicezione}] Client ${client.id} asked for a new random word but the last word was generated less than 5 seconds ago...`)
+      return;
+    }
+    
+    
     
     // const ws = this.socketsPool.Item( client.id );
     this.logger.log(`[${dataRicezione}] Client ${client.id} asked for a new random word...`)
     
     const random_word = WordsSingleton.GetRandomWordExcluding(this.rooms_used_words.get(payload.roomId));
     
-    const room_stats = this.rooms_stats.get(payload.roomId);
-    if( room_stats.is_paused ) {
-      // Update room stats
-      this.rooms_stats.get(payload.roomId).current_word = random_word;
-  
-      // Update used words
-      this.rooms_used_words.get(payload.roomId).push(random_word);
-  
-      this.server.to(payload.roomId).emit('received-new-random-word', {
-        random_word: random_word
-      });
-    }
+    // Update room stats
+    this.rooms_stats.get(payload.roomId).current_word = random_word;
+
+    // Update used words
+    this.rooms_used_words.get(payload.roomId).push(random_word);
+
+    // Update last word generated time
+    this.rooms_stats.get(payload.roomId).last_word_generated_time = moment().format('YYYY-MM-DD HH:mm:ss');
+    
+    this.server.to(payload.roomId).emit('received-new-random-word', {
+      random_word: random_word
+    });
   }
   
   @SubscribeMessage('start-timer')
