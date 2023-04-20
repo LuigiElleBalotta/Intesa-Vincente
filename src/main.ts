@@ -6,6 +6,7 @@ import { ConfigService } from "@nestjs/config";
 import { ValidationPipe } from "@nestjs/common";
 import { registerHandlebars } from "./core/handlebars/handlebars.utils";
 import { PeerServerService } from "./core/peer-server/peer-server.service";
+import { WordsSingleton } from "./core/singletons/words.singleton";
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -20,6 +21,8 @@ async function bootstrap() {
     
     app.useGlobalPipes(new ValidationPipe())
     app.enableCors();
+    
+    WordsSingleton.GetWordsSet(2);
     
     const peerServerService = app.get(PeerServerService);
     peerServerService.enablePeerServer(app);
