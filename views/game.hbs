@@ -107,10 +107,11 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js
     // Get the value of the parameter "id"
     const id = params.get("roomId");
     const player_type = params.get("privilege");
+    const player_name = params.get("name");
     socket = io.connect(window.location.origin, { path: "/ws" });
 
     // Call init function from game_engine.js
-    init(socket, id, player_type, {
+    init(socket, id, player_type, player_name, {
         view_word: {{this.view_word}},
     });
   });

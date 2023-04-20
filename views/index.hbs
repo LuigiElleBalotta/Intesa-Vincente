@@ -85,6 +85,8 @@
     <hr/>
     <p><strong>OPPURE</strong></p>
     <hr/>
+    <label for="name-field">Come ti chiami?</label>
+    <input type="text" id="name-field" />
     <label for="input-field">Inserisci il codice:</label>
     <input type="text" id="input-field" />
     <label for="privilege-select">Che tipo di privilegio vuoi avere?</label>
@@ -103,6 +105,14 @@
     const privilege = document.getElementById('privilege-select').value;
     const code = input.value;
 
+    const name = document.getElementById('name-field');
+    let nome = name?.value ?? null;
+    if(!nome) {
+      alert('Inserisci il tuo nome');
+      return;
+    }
+    nome = name.value;
+
     if(!code) {
       alert('Inserisci il codice della stanza');
       return;
@@ -114,7 +124,7 @@
     }
 
     if (code.length > 0) {
-      window.location.href = `/game?roomId=${code}&privilege=${privilege}`;
+      window.location.href = `/game?roomId=${code}&privilege=${privilege}&name=${nome}`;
     }
   }
 </script>

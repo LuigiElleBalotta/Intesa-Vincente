@@ -38,7 +38,7 @@ export class AppController {
   
   @Get('game')
   @Render('game')
-  getGame(@Query('roomId') roomId: string, @Query('privilege') privilege): any {
+  getGame(@Query('roomId') roomId: string, @Query('privilege') privilege, @Query('name') nome: string): any {
     switch(privilege) {
       case 'conduttore':
         return {
@@ -47,6 +47,7 @@ export class AppController {
           view_next_round: true,
           view_stop_round: true,
           view_word: true,
+          nome: nome
         };
       case 'giocatore':
         return {
@@ -55,6 +56,7 @@ export class AppController {
           view_next_round: false,
           view_stop_round: true,
           view_word: false,
+          nome: nome
         };
       case 'spettatore':
         return {
@@ -63,6 +65,7 @@ export class AppController {
           view_next_round: false,
           view_stop_round: false,
           view_word: true,
+          nome: nome
         }
     }
     throw new UnauthorizedException("Invalid privilege");

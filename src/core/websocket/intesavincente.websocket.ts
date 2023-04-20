@@ -8,6 +8,8 @@ export class IntesaVincenteWs {
   _socketBase: Socket;
   player_type: string;
   roomId: string;
+  player_name: string;
+  privilege: string;
   
   constructor( baseSocket: Socket ) {
     this._socketBase = baseSocket;

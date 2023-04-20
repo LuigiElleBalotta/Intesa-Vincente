@@ -72,6 +72,8 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
     const ws = this.socketsPool.Item( client.id );
     ws.player_type = payload.player_type;
     ws.roomId = payload.roomId;
+    ws.player_name = payload.player_name;
+    ws.privilege = payload.privilege;
     
     // Init room stats
     if( !this.rooms_stats.has(payload.roomId) ) {
@@ -93,13 +95,21 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
     }
     
     this.server.to(payload.roomId).emit('on-joined-room', {
-      stats: this.rooms_stats.get(payload.roomId)
+      stats: this.rooms_stats.get(payload.roomId),
+      who: payload.player_name
     });
   }
   
   @SubscribeMessage('new-random-word')
   handleMessage(@ConnectedSocket() client: Socket, @MessageBody() payload: any ): void {
     const dataRicezione = moment().format('YYYY-MM-DD HH:mm:ss');
+    
+    const ws = this.socketsPool.Item( client.id );
+    if( ws.privilege !== 'conduttore' ) {
+      this.logger.log(`[${dataRicezione}] Client ${client.id} (known as: ${ws.player_name}) asked for a new random word but he is not the conductor...`)
+      return;
+    }
+    
     // If last_word_generated_time is null or the difference between now and last_word_generated_time is less than 5 second, do nothing
     if( this.rooms_stats.get(payload.roomId).last_word_generated_time && moment().diff(this.rooms_stats.get(payload.roomId).last_word_generated_time, 'seconds') < 5 ) {
       this.logger.log(`[${dataRicezione}] Client ${client.id} asked for a new random word but the last word was generated less than 5 seconds ago...`)
@@ -133,6 +143,12 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
   
     // const ws = this.socketsPool.Item( client.id );
     this.logger.log(`[${dataRicezione}] Client ${client.id} asked to start the room "${payload.roomId}" timer...`);
+    
+    const ws = this.socketsPool.Item( client.id );
+    if( ws.privilege !== 'conduttore' ) {
+      this.logger.log(`[${dataRicezione}] Client ${client.id} (known as: ${ws.player_name}) asked to start the room "${payload.roomId}" timer but it's not a conductor...`);
+      return;
+    }
     
     const room_timer = this.rooms_timers.get(payload.roomId);
     
@@ -245,6 +261,8 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
     // const ws = this.socketsPool.Item( client.id );
     this.logger.log(`[${dataRicezione}] Client ${client.id} wants to answer. Stopping timer...`);
     
+    const ws = this.socketsPool.Item( client.id );
+    
     // This is needed to prevent to call the timer-tick event
     const room_timer = this.rooms_timers.get(payload.roomId);
     if( room_timer.interval_ref !== null ) {
@@ -252,7 +270,7 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
       room_timer.interval_ref = null;
     }
   
-    this.server.to(payload.roomId).emit('stop-countdown', {});
+    this.server.to(payload.roomId).emit('stop-countdown', { who: ws.player_name, privilege: ws.privilege });
   }
   
   @SubscribeMessage('update-score')

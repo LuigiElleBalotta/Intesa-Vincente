@@ -12,12 +12,12 @@ var audio_wrong_answer_path = '/audio/wrong_answer.mp3';
 var audio_prenotation_path = '/audio/prenotazione.mp3';
 var audio_word_change_path = '/audio/word_change.mp3';
 
-function init( socket, roomId, privilege, permissions ) {
+function init( socket, roomId, privilege, player_name, permissions ) {
     _roomId = roomId;
     socket = socket;
     options = permissions;
 
-    handle_connect(privilege, roomId)
+    handle_connect(privilege, roomId, player_name)
     handle_disconnect()
     handle_on_joined_room()
     handle_on_new_random_word()
@@ -53,11 +53,11 @@ function prenota_btn_click() {
     }
 }
 
-function startSwalPrenotation() {
+function startSwalPrenotation( isRispostaPrenotata = true ) {
     let timerInterval
     Swal.fire({
-        title: 'Risposta prenotata!',
-        html: 'Sono rimasti <b></b> secondi per rispondere.',
+        title: isRispostaPrenotata ? 'Risposta prenotata!' : "Passo usato!",
+        html: isRispostaPrenotata ? 'Sono rimasti <b></b> secondi per rispondere.' : 'I giocatori hanno usato un "PASSO". Fra <b></b> secondi sparirà questo popup.',
         timer: 5000,
         timerProgressBar: true,
         allowOutsideClick: false,
@@ -126,14 +126,14 @@ function playAudio(path) {
 }
 
 // Socket.IO related functions.
-function handle_connect( privilege, id ) {
+function handle_connect( privilege, id, player_name ) {
     socket.on("connect", function () {
         console.log("[Socket.IO] Connected to server");
         status.socket_connected = true;
         createToast('Ti sei connesso al server di gioco.', 'success')
         player_type = privilege;
         roomId = id;
-        socket.emit("joinRoom", { roomId: roomId, player_type: privilege })
+        socket.emit("joinRoom", { roomId: roomId, player_type: privilege, player_name: player_name, privilege: privilege })
     });
 }
 
@@ -148,7 +148,7 @@ function handle_disconnect() {
 function handle_on_joined_room() {
     socket.on("on-joined-room", function (data) {
         console.log("[Socket.IO] on-joined-room", data);
-        createToast('Qualcuno ha joinato la stanza.', 'info' );
+        createToast(data.who + ' ha joinato la stanza.', 'info' );
         handle_serverside_stats(data.stats);
     });
 }
@@ -177,6 +177,12 @@ function handle_stop_countdown() {
         console.log("[Socket.IO] stop-countdown", data);
         status.timer_active = false;
         playAudio(audio_prenotation_path);
+        if( data.privilege !== 'conduttore' ) {
+            createToast(`${data.who} ha prenotato la risposta!`, 'success' );
+        }
+        else {
+            createToast(`${data.who} premuto il bottone "PASSO"!`, 'warning' );
+        }
         startSwalPrenotation();
     });
 }
