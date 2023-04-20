@@ -86,6 +86,28 @@ Chiamando questo endpoint tutti i giocatori che usano questa istanza del softwar
 
 ![lista stanze](./public/rooms_list.png)
 
-## Cosa manca
+## Developers Info
 
-- [ ] Aggiungere la possibilità di visualizzare i 5 secondi per rispondere (attualmente è possibile aggirare questa cosa con il timer dello smartphone)
+### Installazione
+
+```bash
+$ npm install
+```
+
+### Avviare in locale
+
+```bash
+$ npm run start
+```
+
+### Build
+
+```bash
+$ npm run build
+```
+
+### Avviare con Docker
+
+```bash
+$ docker-compose up -d
+```

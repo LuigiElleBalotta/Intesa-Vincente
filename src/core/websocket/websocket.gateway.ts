@@ -136,11 +136,14 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
     
     const room_timer = this.rooms_timers.get(payload.roomId);
     
-    const room_stats = this.rooms_stats.get(payload.roomId);
+    if( room_timer.interval_ref ) {
+      this.logger.log(`[${dataRicezione}] Client ${client.id} asked to start the room "${payload.roomId}" timer but it's already running...`);
+      return;
+    }
     
-      room_timer.interval_ref = setInterval(() => {
-        this._handleTimerTick(payload.roomId);
-      }, 1000);
+    room_timer.interval_ref = setInterval(() => {
+      this._handleTimerTick(payload.roomId);
+    }, 1000);
   }
   
   private _handleTimerTick(roomId: string) {
@@ -244,7 +247,7 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
     
     // This is needed to prevent to call the timer-tick event
     const room_timer = this.rooms_timers.get(payload.roomId);
-    if( room_timer.interval_ref != null ) {
+    if( room_timer.interval_ref !== null ) {
       clearInterval(room_timer.interval_ref);
       room_timer.interval_ref = null;
     }
