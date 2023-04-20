@@ -183,7 +183,7 @@ function handle_stop_countdown() {
         else {
             createToast(`${data.who} premuto il bottone "PASSO"!`, 'warning' );
         }
-        startSwalPrenotation();
+        startSwalPrenotation( data.privilege === 'conduttore' ? false : true );
     });
 }
 
