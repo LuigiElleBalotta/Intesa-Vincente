@@ -138,13 +138,9 @@ export class WebsocketGateway implements OnGatewayInit<Server>, OnGatewayConnect
     
     const room_stats = this.rooms_stats.get(payload.roomId);
     
-    // This check should prevent multiple buttons click...
-    if( room_stats.is_paused ) {
-      room_stats.is_paused = false;
       room_timer.interval_ref = setInterval(() => {
         this._handleTimerTick(payload.roomId);
       }, 1000);
-    }
   }
   
   private _handleTimerTick(roomId: string) {
